@@ -60,7 +60,10 @@
       thisProduct.id = id;
       thisProduct.data = data;
       thisProduct.renderInMenu();
+      thisProduct.getElements();
       thisProduct.initAccordion();
+      thisProduct.initOrderForm();
+      thisProduct.processOrder();
     }
 
     renderInMenu() {
@@ -72,11 +75,29 @@
       menuContainer.appendChild(thisProduct.element);
     }
 
-    initAccordion() {
+    getElements() {
       const thisProduct = this;
-      const click = thisProduct.element.querySelector(
+
+      thisProduct.accordionTrigger = thisProduct.element.querySelector(
         select.menuProduct.clickable
       );
+      thisProduct.form = thisProduct.element.querySelector(
+        select.menuProduct.form
+      );
+      thisProduct.formInputs = thisProduct.form.querySelectorAll(
+        select.all.formInputs
+      );
+      thisProduct.cartButton = thisProduct.element.querySelector(
+        select.menuProduct.cartButton
+      );
+      thisProduct.priceElem = thisProduct.element.querySelector(
+        select.menuProduct.priceElem
+      );
+    }
+
+    initAccordion() {
+      const thisProduct = this,
+        click = thisProduct.accordionTrigger;
       click.addEventListener('click', function() {
         event.preventDefault();
         thisProduct.element.classList.add(classNames.menuProduct.wrapperActive);
@@ -92,18 +113,48 @@
         }
       });
     }
+
+    initOrderForm() {
+      const thisProduct = this;
+      console.log('===Metoda initOrderForm===');
+      thisProduct.form.addEventListener('submit', function(event){
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
+      
+      for(let input of thisProduct.formInputs){
+        input.addEventListener('change', function(){
+          thisProduct.processOrder();
+        });
+      }
+      
+      thisProduct.cartButton.addEventListener('click', function(event){
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
+    }
+
+    processOrder() {
+      const thisProduct = this;
+      console.log('===Metoda processOrder===');
+      const formData = utils.serializeFormToObject(thisProduct.form);
+      console.log('formData', formData);
+    }
   }
+
   const app = {
     initData: function() {
       const thisApp = this;
       thisApp.data = dataSource;
     },
+
     initMenu: function() {
       const thisApp = this;
       for (let productData in thisApp.data.products) {
         new Product(productData, thisApp.data.products[productData]);
       }
     },
+
     init: function() {
       const thisApp = this;
       console.log('*** App starting ***');

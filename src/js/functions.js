@@ -9,7 +9,7 @@ utils.createDOMFromHTML = function(htmlString) {
 };
 
 utils.createPropIfUndefined = function(obj, key, value = []){
-  if(!obj.prototype.hasOwnProperty.call(key)){
+  if(!Object.prototype.hasOwnProperty.call(obj,'key')){
     obj[key] = value;
   }
 };

@@ -98,6 +98,7 @@
     initAccordion() {
       const thisProduct = this,
         click = thisProduct.accordionTrigger;
+        
       click.addEventListener('click', function() {
         event.preventDefault();
         thisProduct.element.classList.add(classNames.menuProduct.wrapperActive);
@@ -105,7 +106,7 @@
         const activeProducts = document.querySelectorAll('.product.active');
 
         for (let activeProduct of activeProducts) {
-          if (activeProduct != thisProduct.element) {
+          if (activeProduct !== thisProduct.element) {
             activeProduct.classList.remove(
               classNames.menuProduct.wrapperActive
             );

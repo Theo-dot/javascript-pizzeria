@@ -147,7 +147,6 @@
         const param = thisProduct.data.params[paramId];
 
         for (let optionId in param.options) {
-
           const option = param.options[optionId];
 
           const optionSelected =
@@ -155,9 +154,8 @@
             formData[paramId].indexOf(optionId) > -1;
 
           if (optionSelected && !option.default) {
-            price += price + option.price;
-          } 
-          else if (!optionSelected && option.default) {
+            price += option.price;
+          } else if (!optionSelected && option.default) {
             price -= option.price;
           }
           console.log('<<<<AFTER PRICE>>>>', price);

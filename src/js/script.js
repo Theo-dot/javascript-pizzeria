@@ -98,7 +98,7 @@
     initAccordion() {
       const thisProduct = this,
         click = thisProduct.accordionTrigger;
-        
+
       click.addEventListener('click', function() {
         event.preventDefault();
         thisProduct.element.classList.add(classNames.menuProduct.wrapperActive);
@@ -118,18 +118,18 @@
     initOrderForm() {
       const thisProduct = this;
       console.log('===Metoda initOrderForm===');
-      thisProduct.form.addEventListener('submit', function(event){
+      thisProduct.form.addEventListener('submit', function(event) {
         event.preventDefault();
         thisProduct.processOrder();
       });
-      
-      for(let input of thisProduct.formInputs){
-        input.addEventListener('change', function(){
+
+      for (let input of thisProduct.formInputs) {
+        input.addEventListener('change', function() {
           thisProduct.processOrder();
         });
       }
-      
-      thisProduct.cartButton.addEventListener('click', function(event){
+
+      thisProduct.cartButton.addEventListener('click', function(event) {
         event.preventDefault();
         thisProduct.processOrder();
       });
@@ -140,6 +140,30 @@
       console.log('===Metoda processOrder===');
       const formData = utils.serializeFormToObject(thisProduct.form);
       console.log('formData', formData);
+      let price = thisProduct.data.price;
+      console.log('Cena:', price);
+
+      for (let paramId in thisProduct.data.params) {
+        const param = thisProduct.data.params[paramId];
+
+        for (let optionId in param.options) {
+
+          const option = param.options[optionId];
+
+          const optionSelected =
+            formData.hasOwnProperty(paramId) &&
+            formData[paramId].indexOf(optionId) > -1;
+
+          if (optionSelected && !option.default) {
+            price += price + option.price;
+          } 
+          else if (!optionSelected && option.default) {
+            price -= option.price;
+          }
+          console.log('<<<<AFTER PRICE>>>>', price);
+          thisProduct.priceElem.innerHTML = price;
+        }
+      }
     }
   }
 

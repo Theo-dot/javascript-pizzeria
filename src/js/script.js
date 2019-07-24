@@ -137,7 +137,9 @@
 
       click.addEventListener('click', function() {
         event.preventDefault();
-        thisProduct.element.classList.add(classNames.menuProduct.wrapperActive);
+        thisProduct.element.classList.toggle(
+          classNames.menuProduct.wrapperActive
+        );
 
         const activeProducts = document.querySelectorAll('.product.active');
 
@@ -167,12 +169,14 @@
       thisProduct.cartButton.addEventListener('click', function(event) {
         event.preventDefault();
         thisProduct.processOrder();
+        thisProduct.addToCart();
       });
     }
 
     processOrder() {
       const thisProduct = this;
       const formData = utils.serializeFormToObject(thisProduct.form);
+      thisProduct.params = {};
       let price = thisProduct.data.price;
 
       for (let paramId in thisProduct.data.params) {
@@ -194,6 +198,13 @@
           }
 
           if (optionSelected) {
+            if (!thisProduct.params[paramId]) {
+              thisProduct.params[paramId] = {
+                label: param.label,
+                options: {},
+              };
+            }
+            thisProduct.params[paramId].options[optionId] = option.label;
             for (let activeImage of activeImages) {
               activeImage.classList.add(classNames.menuProduct.imageVisible);
             }
@@ -204,8 +215,10 @@
           }
         }
       }
-      price = price * thisProduct.amountWidget.value;
-      thisProduct.priceElem.innerHTML = price;
+      thisProduct.priceSingle = price;
+      thisProduct.price =
+        thisProduct.priceSingle * thisProduct.amountWidget.value;
+      thisProduct.priceElem.innerHTML = thisProduct.price;
     }
 
     initAmountWidget() {
@@ -214,6 +227,13 @@
       thisProduct.amountWidgetElem.addEventListener('updated', function() {
         thisProduct.processOrder();
       });
+    }
+
+    addToCart() {
+      const thisProduct = this;
+      thisProduct.name = thisProduct.data.name;
+      thisProduct.amount = thisProduct.amountWidget.value;
+      app.cart.add(thisProduct);
     }
   }
 
@@ -295,15 +315,27 @@
       const thisCart = this;
       thisCart.dom = {};
       thisCart.dom.wrapper = element;
-      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
-      console.log('==========',  thisCart.dom.toggleTrigger);
+      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(
+        select.cart.toggleTrigger
+      );
+      thisCart.dom.productList = thisCart.dom.wrapper.querySelector(
+        select.cart.productList
+      );
     }
 
     initActions() {
       const thisCart = this;
-      thisCart.dom.toggleTrigger.addEventListener('click', function(){
+      thisCart.dom.toggleTrigger.addEventListener('click', function() {
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
       });
+    }
+
+    add(menuProduct) {
+      const thisCart = this,
+        generatedHTML = templates.cartProduct(menuProduct),
+        generatedDOM = utils.createDOMFromHTML(generatedHTML);
+      console.log('================', generatedDOM);
+      thisCart.dom.productList.appendChild(generatedDOM);
     }
   }
 

@@ -151,11 +151,9 @@
         const param = thisProduct.data.params[paramId];
 
         for (let optionId in param.options) {
-          const option = param.options[optionId];
-          const imageId = '.' + paramId + '-' + optionId;
-          const activeImages = thisProduct.imageWrapper.querySelectorAll(
-            imageId
-          );
+          const option = param.options[optionId],
+            imageId = `.${paramId}-${optionId}`,
+            activeImages = thisProduct.imageWrapper.querySelectorAll(imageId);
 
           const optionSelected =
             formData.hasOwnProperty(paramId) &&

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {select, templates, settings} from '../settings.js';
 import {AmountWidget} from './AmountWidget.js';
 import {DatePicker} from './DatePicker.js';
@@ -114,10 +115,10 @@ export class Booking {
     console.log('duration', duration);
 
     //for (let i = 0; i < duration; i++) {
-      thisBooking.booked[date] = {};
-      thisBooking.booked[date][newHour] = [table];
+    thisBooking.booked[date] = {};
+    thisBooking.booked[date][newHour] = [table];
 
-      console.log('thisBOOKING.BOOKED', thisBooking.booked);
+    console.log('thisBOOKING.BOOKED', thisBooking.booked);
     //}
   }
 }

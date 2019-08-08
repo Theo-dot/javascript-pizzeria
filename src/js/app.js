@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {Product} from './components/Product.js';
 import {Cart} from './components/Cart.js';
 import {select, settings, classNames} from './settings.js';
@@ -51,6 +52,7 @@ const app = {
       pagesMatchingHash = thisApp.pages.filter(function(page) {
         return page.id == idFromHash;
       });
+      thisApp.activatePage(pagesMatchingHash.length ? pagesMatchingHash[0].id : thisApp.pages[0].id);
     }
 
     for (let link of thisApp.navLinks) {
@@ -73,6 +75,7 @@ const app = {
 
   activatePage(pageId) {
     const thisApp = this;
+    window.location.hash = '#/' + pageId;
     for (let link of thisApp.navLinks) {
       link.classList.toggle(
         classNames.nav.active,
@@ -85,7 +88,6 @@ const app = {
         link.getAttribute('id') == pageId
       );
     }
-    window.location.hash = '#/' + pageId;
   },
 
   init: function() {

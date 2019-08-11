@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import {select, templates, settings} from '../settings.js';
+import {select, templates, settings, classNames} from '../settings.js';
 import {AmountWidget} from './AmountWidget.js';
 import {DatePicker} from './DatePicker.js';
 import {HourPicker} from './HourPicker.js';
@@ -33,6 +33,7 @@ export class Booking {
     thisBooking.dom.hourPicker = thisBooking.dom.wrapper.querySelector(
       select.widgets.hourPicker.wrapper
     );
+    thisBooking.dom.tables = thisBooking.dom.wrapper.querySelectorAll(select.booking.tables);
   }
 
   initWidgets() {
@@ -41,6 +42,14 @@ export class Booking {
     thisBooking.hoursAmount = new AmountWidget(thisBooking.dom.hoursAmount);
     thisBooking.datePicker = new DatePicker(thisBooking.dom.datePicker);
     thisBooking.hourPicker = new HourPicker(thisBooking.dom.hourPicker);
+
+    thisBooking.dom.datePicker.addEventListener('updated', function(){
+      thisBooking.updateDOM();
+    });
+
+    thisBooking.dom.hourPicker.addEventListener('updated', function(){
+      thisBooking.updateDOM();
+    });
   }
 
   getData() {
@@ -101,24 +110,80 @@ export class Booking {
     const thisBooking = this;
     thisBooking.booked = {};
 
-    for (let i = 0; i < eventsCurrent.length; i++) {
-      const {date, hour, duration, table} = eventsCurrent[i];
-      console.log('CURRENT', eventsCurrent[i]);
-      thisBooking.makeBooked(date, hour, duration, table);
+    for (let event of eventsCurrent) {
+      thisBooking.makeBooked(
+        event.date,
+        event.hour,
+        event.duration,
+        event.table
+      );
     }
+
+    for (let booking of bookings) {
+      thisBooking.makeBooked(
+        booking.date,
+        booking.hour,
+        booking.duration,
+        booking.table
+      );
+    }
+
+    for (let eventRepeat of eventsRepeat) {
+      thisBooking.maxDate = utils.dateToStr(thisBooking.datePicker.maxDate);
+      thisBooking.minDate = utils.dateToStr(thisBooking.datePicker.minDate);
+
+      for (
+        let i = thisBooking.minDate;
+        i < thisBooking.maxDate;
+        i = utils.dateToStr(utils.addDays(i, 1))
+      ) {
+        thisBooking.makeBooked(
+          i,
+          eventRepeat.hour,
+          eventRepeat.duration,
+          eventRepeat.table
+        );
+      }
+    }
+    thisBooking.updateDOM();
   }
 
   makeBooked(date, hour, duration, table) {
+    const thisBooking = this,
+      newHour = utils.hourToNumber(hour);
+
+    for (let i = newHour; i < newHour + duration; i += 0.5) {
+      if (thisBooking.booked[date]) {
+        if (thisBooking.booked[date][i]) {
+          thisBooking.booked[date][i].push(table);
+        } else {
+          thisBooking.booked[date][i] = [table];
+        }
+      } else {
+        thisBooking.booked[date] = {
+          [newHour]: [table],
+        };
+      }
+    }
+  }
+
+  updateDOM() {
     const thisBooking = this;
-    const newHour = utils.hourToNumber(hour);
-    console.log('new Hour', newHour);
-    console.log('duration', duration);
+    thisBooking.date = thisBooking.datePicker.value;
+    thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value);
+    console.log('DATA', thisBooking.date);
+    console.log('Hour', thisBooking.hour);
 
-    //for (let i = 0; i < duration; i++) {
-    thisBooking.booked[date] = {};
-    thisBooking.booked[date][newHour] = [table];
+    for (let table of thisBooking.dom.tables){
+      const tableNumber = parseInt(table.getAttribute(settings.booking.tableIdAttribute));
+      console.log('TABLE NUMBER', tableNumber);
 
-    console.log('thisBOOKING.BOOKED', thisBooking.booked);
-    //}
+      if (thisBooking.booked[thisBooking.date] && thisBooking.booked[thisBooking.date][thisBooking.hour] && thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableNumber)){
+        table.classList.add(classNames.booking.tableBooked);
+      }
+      else {
+        table.classList.remove(classNames.booking.tableBooked);
+      }
+    }
   }
 }

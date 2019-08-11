@@ -29,7 +29,7 @@ export class DatePicker extends BaseWidget {
       defaultDate: thisWidget.minDate,
       minDate: thisWidget.minDate,
       maxDate: thisWidget.maxDate,
-      onChange: function(selectedDates, dateStr, instance){
+      onChange: function(selectedDates, dateStr) {
         thisWidget.value = dateStr;
       },
       disable: [
@@ -44,15 +44,10 @@ export class DatePicker extends BaseWidget {
   }
 
   parseValue(newValue) {
-    const thisWidget = this;
+    return newValue;
   }
 
-  isValid(newValue) {
-    const thisWidget = this;
+  isValid() {
     return true;
-  }
-
-  renderValue() {
-    const thisWidget = this;
   }
 }

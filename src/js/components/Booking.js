@@ -171,12 +171,9 @@ export class Booking {
     const thisBooking = this;
     thisBooking.date = thisBooking.datePicker.value;
     thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value);
-    console.log('DATA', thisBooking.date);
-    console.log('Hour', thisBooking.hour);
 
     for (let table of thisBooking.dom.tables){
       const tableNumber = parseInt(table.getAttribute(settings.booking.tableIdAttribute));
-      console.log('TABLE NUMBER', tableNumber);
 
       if (thisBooking.booked[thisBooking.date] && thisBooking.booked[thisBooking.date][thisBooking.hour] && thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableNumber)){
         table.classList.add(classNames.booking.tableBooked);

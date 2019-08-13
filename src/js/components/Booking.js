@@ -14,13 +14,16 @@ export class Booking {
   }
 
   render() {
-    const thisBooking = this;
-    const generatedHTML = templates.bookingWidget();
+    const thisBooking = this,
+      generatedHTML = templates.bookingWidget();
     thisBooking.dom = {};
+
     thisBooking.dom.wrapper = document.querySelector(
       select.containerOf.booking
     );
+
     thisBooking.dom.wrapper.innerHTML = generatedHTML;
+
     thisBooking.dom.peopleAmount = thisBooking.dom.wrapper.querySelector(
       select.booking.peopleAmount
     );
@@ -33,7 +36,12 @@ export class Booking {
     thisBooking.dom.hourPicker = thisBooking.dom.wrapper.querySelector(
       select.widgets.hourPicker.wrapper
     );
-    thisBooking.dom.tables = thisBooking.dom.wrapper.querySelectorAll(select.booking.tables);
+    thisBooking.dom.tables = thisBooking.dom.wrapper.querySelectorAll(
+      select.booking.tables
+    );
+    thisBooking.dom.starters = thisBooking.dom.wrapper.querySelectorAll(
+      select.booking.starters
+    );
   }
 
   initWidgets() {
@@ -42,14 +50,40 @@ export class Booking {
     thisBooking.hoursAmount = new AmountWidget(thisBooking.dom.hoursAmount);
     thisBooking.datePicker = new DatePicker(thisBooking.dom.datePicker);
     thisBooking.hourPicker = new HourPicker(thisBooking.dom.hourPicker);
+    thisBooking.table = [];
 
-    thisBooking.dom.datePicker.addEventListener('updated', function(){
+    thisBooking.dom.datePicker.addEventListener('updated', function() {
       thisBooking.updateDOM();
     });
 
-    thisBooking.dom.hourPicker.addEventListener('updated', function(){
+    thisBooking.dom.hourPicker.addEventListener('updated', function() {
       thisBooking.updateDOM();
     });
+    thisBooking.tableBooking();
+
+    thisBooking.submitBooking = thisBooking.dom.wrapper.querySelector(
+      select.booking.bookingSubmit
+    );
+    thisBooking.submitBooking.addEventListener('click', function() {
+      event.preventDefault();
+      thisBooking.sendOrder();
+      thisBooking.tableBooking();
+    });
+
+    thisBooking.starters = [];
+
+    for (let starter of thisBooking.dom.starters) {
+      starter.addEventListener('change', function() {
+        if (this.checked) {
+          thisBooking.starters.push(starter.value);
+        } else {
+          thisBooking.starters.splice(
+            thisBooking.starters.indexOf(starter.value),
+            1
+          );
+        }
+      });
+    }
   }
 
   getData() {
@@ -69,20 +103,20 @@ export class Booking {
 
     const params = {
       booking: utils.queryParams(startEndDates),
-      eventsCurrent:
-        settings.db.notRepeatParam + '&' + utils.queryParams(startEndDates),
-      eventsRepeat: settings.db.repeatParam + '&' + utils.queryParams(endDate),
+      eventsCurrent: `${settings.db.notRepeatParam}&${utils.queryParams(
+        startEndDates
+      )}`,
+      eventsRepeat: `${settings.db.repeatParam}&${utils.queryParams(endDate)}`,
     };
 
     console.log('getData params', params);
 
     const urls = {
-      booking:
-        settings.db.url + '/' + settings.db.booking + '?' + params.booking,
-      eventsCurrent:
-        settings.db.url + '/' + settings.db.event + '?' + params.eventsCurrent,
-      eventsRepeat:
-        settings.db.url + '/' + settings.db.event + '?' + params.eventsRepeat,
+      booking: `${settings.db.url}/${settings.db.booking}?${params.booking}`,
+      eventsCurrent: `${settings.db.url}/${settings.db
+        .event}?${params.eventsCurrent}`,
+      eventsRepeat: `${settings.db.url}/${settings.db
+        .event}?${params.eventsRepeat}`,
     };
 
     console.log('getData urls', urls);
@@ -167,20 +201,82 @@ export class Booking {
     }
   }
 
+  tableBooking() {
+    const thisBooking = this;
+
+    for (let table of thisBooking.dom.tables) {
+      table.addEventListener('click', function() {
+        const idTable = table.getAttribute('data-table');
+
+        if (!table.classList.contains(classNames.booking.tableBooked)) {
+          table.classList.toggle(classNames.booking.tableBooked);
+          if (thisBooking.table.indexOf(idTable) === -1) {
+            thisBooking.table.push(idTable);
+          } else {
+            thisBooking.table.splice(thisBooking.table.indexOf(idTable), 1);
+          }
+        }
+      });
+    }
+  }
+
   updateDOM() {
     const thisBooking = this;
     thisBooking.date = thisBooking.datePicker.value;
     thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value);
 
-    for (let table of thisBooking.dom.tables){
-      const tableNumber = parseInt(table.getAttribute(settings.booking.tableIdAttribute));
+    for (let table of thisBooking.dom.tables) {
+      const tableNumber = parseInt(
+        table.getAttribute(settings.booking.tableIdAttribute)
+      );
 
-      if (thisBooking.booked[thisBooking.date] && thisBooking.booked[thisBooking.date][thisBooking.hour] && thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableNumber)){
+      if (
+        thisBooking.booked[thisBooking.date] &&
+        thisBooking.booked[thisBooking.date][thisBooking.hour] &&
+        thisBooking.booked[thisBooking.date][thisBooking.hour].includes(
+          tableNumber
+        )
+      ) {
         table.classList.add(classNames.booking.tableBooked);
-      }
-      else {
+      } else {
         table.classList.remove(classNames.booking.tableBooked);
       }
     }
+  }
+
+  sendOrder() {
+    const thisBooking = this,
+      url = `${settings.db.url}/${settings.db.booking}`,
+      payload = {
+        date: thisBooking.datePicker.value,
+        hour: thisBooking.hourPicker.value,
+        table: thisBooking.table,
+        people: thisBooking.peopleAmount.value,
+        duration: thisBooking.hoursAmount.value,
+        starters: thisBooking.starters,
+      };
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    fetch(url, options)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(parsedResponse) {
+        console.log('parsedResponse', parsedResponse);
+
+        thisBooking.makeBooked(
+          payload.date,
+          payload.hour,
+          payload.duration,
+          payload.table
+        );
+      });
   }
 }

@@ -179,7 +179,9 @@ export class Booking {
         );
       }
     }
+    console.log('date', thisBooking.date);
     thisBooking.updateDOM();
+    thisBooking.hourSlider();
   }
 
   makeBooked(date, hour, duration, table) {
@@ -242,6 +244,9 @@ export class Booking {
         table.classList.remove(classNames.booking.tableBooked);
       }
     }
+    thisBooking.dom.datePicker.addEventListener('updated', function() {
+      thisBooking.hourSlider(thisBooking.date);
+    });
   }
 
   sendOrder() {
@@ -278,5 +283,51 @@ export class Booking {
           payload.table
         );
       });
+  }
+
+  hourSlider() {
+    const thisBooking = this,
+      slider = document.querySelector('.rangeSlider__fill'),
+      range = document.createElement('div');
+
+    range.classList.add('time-range');
+    slider.appendChild(range);
+
+    thisBooking.date = thisBooking.datePicker.value;
+
+    for (let i = 12; i < 24; i = i + 0.5) {
+      const colorPart = document.createElement('div');
+      colorPart.classList.add('part-of-time');
+      colorPart.setAttribute('data-tag', i);
+      range.appendChild(colorPart);
+    }
+    thisBooking.timeparts = Array.from(
+      document.querySelector('.time-range').children
+    );
+
+    for (let timepart of thisBooking.timeparts) {
+      const part = timepart.getAttribute('data-tag');
+      timepart.classList.remove('allFree', 'oneFree', 'allTaken');
+
+      for (let i = 12; i < 24; i = i + 0.5) {
+        if (
+          (part == i &&
+            typeof thisBooking.booked[thisBooking.date][i] == 'undefined') ||
+          (part == i && thisBooking.booked[thisBooking.date][i].length === 1)
+        ) {
+          timepart.classList.add('allFree');
+        } else if (
+          part == i &&
+          thisBooking.booked[thisBooking.date][i].length === 2
+        ) {
+          timepart.classList.add('oneFree');
+        } else if (
+          part == i &&
+          thisBooking.booked[thisBooking.date][i].length === 3
+        ) {
+          timepart.classList.add('allTaken');
+        }
+      }
+    }
   }
 }

@@ -88,6 +88,32 @@
     transition: width 100ms;
     box-shadow: none;
   }
+
+  .time-range {
+    width: 302px;
+    height: 12px;
+    position: relative;
+    bottom: 5px;
+  }
+  
+  .part-of-time {
+    height: 12px;
+    width: 12.57px;
+    display: inline-block;
+  }
+
+  .allTaken {
+    background-color: #e60d0d;
+  }
+
+  .allFree {
+    background-color: #1ba000;
+  }
+
+  .oneFree {
+    background-color: #ffd000;
+  }
+
 }
 
 .flatpickr-day {

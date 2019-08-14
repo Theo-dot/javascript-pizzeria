@@ -90,7 +90,7 @@
   }
 
   .time-range {
-    width: 302px;
+    width: 300px;
     height: 12px;
     position: relative;
     bottom: 5px;
@@ -98,20 +98,20 @@
   
   .part-of-time {
     height: 12px;
-    width: 12.57px;
+    width: 12px;
     display: inline-block;
   }
 
   .allTaken {
-    background-color: #e60d0d;
+    background-color: $color-all-taken;
   }
 
   .allFree {
-    background-color: #1ba000;
+    background-color: $color-free-table;
   }
 
   .oneFree {
-    background-color: #ffd000;
+    background-color: $color-one-free;
   }
 
 }

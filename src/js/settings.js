@@ -67,7 +67,7 @@ export const select = {
     starters: '.checkbox [type="checkbox"]',
   },
   nav: {
-    links: '.main-nav a',
+    links: '.home-page a',
   },
 };
 

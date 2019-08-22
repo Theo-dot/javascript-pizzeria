@@ -186,7 +186,6 @@ export class Booking {
   makeBooked(date, hour, duration, table) {
     const thisBooking = this,
       newHour = utils.hourToNumber(hour);
-      console.log('date', thisBooking.date);
     for (let i = newHour; i < newHour + duration; i += 0.5) {
       if (thisBooking.booked[date]) {
         if (thisBooking.booked[date][i]) {

@@ -1,0 +1,173 @@
+*,
+*::before,
+*::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.main-page {
+  margin: ($base-size * 3) ($base-size * 12);
+  padding: ($base-size * 6) ($base-size * 4);
+  background: $color-light;
+  border-bottom: 1px solid lighten($color-dark, 70%);
+  border-radius: $radius;
+}
+
+.opening-times {
+  background-color: $color-main;
+  border-radius: $radius;
+  margin-top: 10px;
+  height: 100px;
+  text-align: center;
+  padding: 22px;
+}
+
+.top-img {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bw-photo {
+  height: 100px;
+  width: 290px;
+  object-fit: cover;
+  flex: 1;
+  overflow: hidden;
+  border-radius: $radius;
+}
+
+.bw-card {
+  height: 100px;
+  display: flex;
+}
+
+.card-body h2 {
+  margin-top: 130px;
+}
+
+.card-body p {
+  margin-top: 90px;
+  position: relative;
+  color: $color-light;
+  transition: 1s ease;
+}
+
+.bw-card:hover .card-body > p {
+  margin-top: 0;
+  margin-bottom: 130px;
+  color: $color-light;
+}
+
+.bw-card a {
+  text-decoration: none;
+}
+
+.home-page {
+  padding: ($base-size * 3) 0;
+}
+
+h2, h5 {
+  text-transform: uppercase;
+  text-align: center;
+  color: $color-light;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+.carousel-section {
+  margin-top: 100px;
+}
+
+.carousel-indicators > li {
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  background-color: lighten($color-dark, 70%);
+}
+
+.carousel-indicators {
+  position: relative;
+  top: 200px;
+}
+
+
+ol.carousel-indicators li.active {
+  background: $color-dark;
+}
+
+.carousel {
+  padding: 20px;
+}
+
+.images {
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: $radius;
+  object-fit: cover;
+}
+
+.photo {
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+
+.gallery-photo {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: $radius;
+  margin-bottom: 10px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  height: inherit;
+  width: inherit;
+  border-radius: inherit;
+  transition: 0.5s ease;
+  background-color: rgba(0, 0, 0, 0);
+
+}
+
+.fas-gallery {
+  color: rgba(0, 0, 0, 0);
+  font-size: 30px;
+  padding: 5px;
+  position: relative;
+  top: 60px;
+  left: 40px;
+}
+
+.gallery-photo:hover .overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: 1s ease;
+}
+
+.gallery-photo:hover .fas-gallery {
+  color: $color-light;
+  transition: 1s ease;
+
+  &.fas-gallery:hover {
+    color: $color-main;
+    cursor: pointer;
+  }
+}
+
+
+.insta {
+  color: $color-main;
+  text-decoration: underline;
+}
+
+.insta:hover {
+  color: $color-main;
+}

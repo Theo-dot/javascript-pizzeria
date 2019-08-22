@@ -60,8 +60,9 @@ const app = {
         const clickedElement = this;
         event.preventDefault();
         const id = clickedElement.getAttribute('href');
+        
         const pageId = id.replace('#', '');
-
+        
         thisApp.activatePage(pageId);
       });
     }
@@ -75,7 +76,7 @@ const app = {
 
   activatePage(pageId) {
     const thisApp = this;
-    window.location.hash = '#/' + pageId;
+   
     for (let link of thisApp.navLinks) {
       link.classList.toggle(
         classNames.nav.active,
@@ -88,6 +89,7 @@ const app = {
         link.getAttribute('id') == pageId
       );
     }
+    window.location.hash = '#/' + pageId;
   },
 
   init: function() {
